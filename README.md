@@ -1,205 +1,190 @@
-# my-website
-1234
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>Simple Calculator</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Haryana GK Quiz - हरियाणा GK क्विज</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    .calculator {
-      display: inline-block;
-      padding: 20px;
-      border: 2px solid #ccc;
-      border-radius: 10px;
-    }
-    input[type="text"] {
-      width: 200px;
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      padding: 5px;
-      text-align: right;
-    }
-    .buttons button {
-      width: 45px;
-      height: 45px;
-      font-size: 1.2em;
-      margin: 5px;
-    }
+    body { font-family: "Noto Sans", Arial, sans-serif; background:#f7f9fc; color:#111; padding:20px; }
+    .container { max-width:760px; margin:20px auto; background:#fff; border-radius:8px; padding:22px; box-shadow:0 6px 18px rgba(20,20,50,0.08); }
+    h1 { margin:0 0 10px 0; font-size:24px; }
+    .meta { color:#666; margin-bottom:18px; }
+    .question { font-weight:600; margin:16px 0; }
+    .options { list-style:none; padding:0; }
+    .options li { margin:8px 0; }
+    button { background:#2563eb; color:#fff; border:0; padding:10px 14px; border-radius:6px; cursor:pointer; font-weight:600; }
+    button[disabled]{ background:#99b5ff; cursor:default; }
+    .result { margin-top:18px; padding:12px; border-radius:6px; background:#f1f8ff; color:#0b3b91; font-weight:600; }
+    .small { font-size:13px; color:#666; margin-top:6px; }
+    .answers { margin-top:14px; }
+    .correct { color:green; }
+    .wrong { color:red; }
+    footer { text-align:center; margin-top:18px; color:#666; font-size:13px; }
   </style>
 </head>
 <body>
-  <div class="calculator">
-    <input type="text" id="display" disabled>
-    <div class="buttons">
-      <br>
-      <button onclick="append('7')">7</button>
-      <button onclick="append('8')">8</button>
-      <button onclick="append('9')">9</button>
-      <button onclick="append('/')">/</button>
-      <br>
-      <button onclick="append('4')">4</button>
-      <button onclick="append('5')">5</button>
-      <button onclick="append('6')">6</button>
-      <button onclick="append('*')">*</button>
-      <br>
-      <button onclick="append('1')">1</button>
-      <button onclick="append('2')">2</button>
-      <button onclick="append('3')">3</button>
-      <button onclick="append('-')">-</button>
-      <br>
-      <button onclick="append('0')">0</button>
-      <button onclick="append('.')">.</button>
-      <button onclick="calculate()">=</button>
-      <button onclick="append('+')">+</button>
-      <br>
-      <button onclick="clearDisplay()">C</button>
+  <div class="container">
+    <h1>हरियाणा GK Quiz</h1>
+    <div class="meta">कुल प्रश्न: <span id="totalQ">0</span> · अभी का प्रश्न: <span id="curQ">0</span></div>
+
+    <div id="quizArea">
+      <div class="question" id="questionText">लोड कर रहे हैं...</div>
+      <ul class="options" id="optionsList"></ul>
+
+      <div style="margin-top:12px;">
+        <button id="submitBtn">जवाब दें</button>
+        <button id="nextBtn" style="margin-left:8px;">अगला प्रश्न</button>
+      </div>
+
+      <div id="feedback" class="small"></div>
     </div>
+
+    <div id="finalResult" style="display:none;">
+      <div class="result" id="scoreText"></div>
+      <div class="answers" id="reviewAnswers"></div>
+      <div style="margin-top:12px;">
+        <button id="retryBtn">फिर से खेलें</button>
+      </div>
+    </div>
+
+    <footer>स्रोत: सामान्य ज्ञान संग्रह • अभ्यास उद्देश्य के लिए</footer>
   </div>
 
-  <script>
-    function append(char) {
-      document.getElementById('display').value += char;
+<script>
+  const questions = [
+    {
+      q: "हरियाणा की राजधानी कौन-सी है?",
+      options: ["चंडीगढ़", "पंजाब", "रोहतक", "गुरुग्राम"],
+      ans: 0
+    },
+    {
+      q: "हरियाणा कब बनाया गया था (राज्य के रूप में)?",
+      options: ["1 नवम्बर 1966", "15 अगस्त 1947", "26 जनवरी 1950", "1 अप्रैल 1965"],
+      ans: 0
+    },
+    {
+      q: "हरियाणा का राष्ट्रीय पक्षी कौन सा है?",
+      options: ["मोर (Peacock)", "बत्तख", "कोयल", "घूँघट वाला चिड़िया"],
+      ans: 0
+    },
+    {
+      q: "हरियाणा का सबसे बड़ा शहर (आबादी के हिसाब से) कौन सा है?",
+      options: ["फरीदाबाद", "गुरुग्राम", "रोहतक", "कैथल"],
+      ans: 0
+    },
+    {
+      q: "किस नदी को हरियाणा का प्रमुख नदी माना जाता है?",
+      options: ["यमुना", "गंगा", "सरस्वती", "सतलज"],
+      ans: 0
+    },
+    {
+      q: "हरियाणा के कितने जिले हैं? (2024 के आसपास)",
+      options: ["22", "21", "20", "19"],
+      ans: 0
+    },
+    {
+      q: "हरियाणा का लोकगीत या पारंपरिक नृत्य क्या है?",
+      options: ["गरबा", "घूमर", "राइ", "भांगड़ा"],
+      ans: 2
+    },
+    {
+      q: "हरियाणा कौन-सा कृषि प्रधान राज्य माना जाता है?",
+      options: ["हाँ", "नहीं", "कुछ हिस्सों में", "केवल पीठासीन क्षेत्रों में"],
+      ans: 0
+    },
+    {
+      q: "हरियाणा का प्रमुख फल किसे कहा जाता है?",
+      options: ["सेब", "मूसमी", "आम", "अनार"],
+      ans: 2
+    },
+    {
+      q: "हरियाणा में स्थित मशहूर हिसार जिला किस लिए जाना जाता है?",
+      options: ["कपड़ा उद्योग (textiles)", "मछली पालन", "ज्वेलरी", "सीमेंट"],
+      ans: 0
     }
+  ];
 
-    function clearDisplay() {
-      document.getElementById('display').value = '';
+  let cur = 0, score = 0, answered = false;
+
+  const totalQ = document.getElementById('totalQ');
+  const curQ = document.getElementById('curQ');
+  const questionText = document.getElementById('questionText');
+  const optionsList = document.getElementById('optionsList');
+  const submitBtn = document.getElementById('submitBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedback = document.getElementById('feedback');
+  const finalResult = document.getElementById('finalResult');
+  const quizArea = document.getElementById('quizArea');
+  const scoreText = document.getElementById('scoreText');
+  const reviewAnswers = document.getElementById('reviewAnswers');
+  const retryBtn = document.getElementById('retryBtn');
+
+  totalQ.textContent = questions.length;
+
+  function loadQuestion() {
+    answered = false;
+    feedback.textContent = '';
+    const q = questions[cur];
+    curQ.textContent = cur + 1;
+    questionText.textContent = q.q;
+    optionsList.innerHTML = '';
+    q.options.forEach((opt, idx) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<label style="cursor:pointer;"><input type="radio" name="opt" value="${idx}"> ${opt}</label>`;
+      optionsList.appendChild(li);
+    });
+    submitBtn.disabled = false;
+    nextBtn.disabled = true;
+  }
+
+  submitBtn.addEventListener('click', () => {
+    if (answered) return;
+    const sel = document.querySelector('input[name="opt"]:checked');
+    if (!sel) { feedback.textContent = 'कृपया एक विकल्प चुनें।'; return; }
+    const chosen = parseInt(sel.value, 10);
+    const correct = questions[cur].ans;
+    answered = true;
+    submitBtn.disabled = true;
+    nextBtn.disabled = false;
+    if (chosen === correct) {
+      score += 1;
+      feedback.innerHTML = `<span class="correct">सही उत्तर ✅</span>`;
+    } else {
+      feedback.innerHTML = `<span class="wrong">गलत ❌</span> सही उत्तर: <strong>${questions[cur].options[correct]}</strong>`;
     }
+  });
 
-    function calculate() {
-      try {
-        const result = eval(document.getElementById('display').value);
-        document.getElementById('display').value = result;
-      } catch {
-        document.getElementById('display').value = 'Error';
-      }
+  nextBtn.addEventListener('click', () => {
+    cur++;
+    if (cur >= questions.length) {
+      showResult();
+    } else {
+      loadQuestion();
     }
-  </script>
-</body>
-</html>
+  });
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Snake Game</title>
-  <style>
-    body {
-      background-color: #222;
-      color: #fff;
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
+  function showResult() {
+    quizArea.style.display = 'none';
+    finalResult.style.display = 'block';
+    scoreText.textContent = `आपका स्कोर: ${score} / ${questions.length}`;
+    reviewAnswers.innerHTML = '';
+    questions.forEach((q, i) => {
+      const div = document.createElement('div');
+      const correct = q.ans;
+      div.innerHTML = `<strong>Q${i+1}.</strong> ${q.q} <br> सही उत्तर: <span class="correct">${q.options[correct]}</span>`;
+      reviewAnswers.appendChild(div);
+    });
+  }
 
-    canvas {
-      background-color: #111;
-      display: block;
-      margin: 30px auto;
-      border: 2px solid #444;
-    }
+  retryBtn.addEventListener('click', () => {
+    cur = 0; score = 0;
+    quizArea.style.display = 'block';
+    finalResult.style.display = 'none';
+    loadQuestion();
+  });
 
-    h1 {
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <h1>🐍 Snake Game</h1>
-  <canvas id="gameCanvas" width="400" height="400"></canvas>
-
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    const box = 20;
-    const canvasSize = 400;
-    const rows = canvasSize / box;
-    const columns = canvasSize / box;
-
-    let snake = [{ x: 10 * box, y: 10 * box }];
-    let direction = null;
-    let food = {
-      x: Math.floor(Math.random() * columns) * box,
-      y: Math.floor(Math.random() * rows) * box
-    };
-
-    let score = 0;
-
-    function draw() {
-      // Clear
-      ctx.clearRect(0, 0, canvasSize, canvasSize);
-
-      // Draw food
-      ctx.fillStyle = "red";
-      ctx.fillRect(food.x, food.y, box, box);
-
-      // Draw snake
-      for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? "lime" : "green";
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
-      }
-
-      // Move snake
-      let headX = snake[0].x;
-      let headY = snake[0].y;
-
-      if (direction === "LEFT") headX -= box;
-      if (direction === "RIGHT") headX += box;
-      if (direction === "UP") headY -= box;
-      if (direction === "DOWN") headY += box;
-
-      // Check collision with walls
-      if (
-        headX < 0 ||
-        headY < 0 ||
-        headX >= canvasSize ||
-        headY >= canvasSize ||
-        collision({ x: headX, y: headY }, snake)
-      ) {
-        clearInterval(game);
-        alert("Game Over! Score: " + score);
-        return;
-      }
-
-      let newHead = { x: headX, y: headY };
-
-      // Eat food
-      if (headX === food.x && headY === food.y) {
-        score++;
-        food = {
-          x: Math.floor(Math.random() * columns) * box,
-          y: Math.floor(Math.random() * rows) * box
-        };
-      } else {
-        snake.pop();
-      }
-
-      snake.unshift(newHead);
-    }
-
-    function collision(head, array) {
-      for (let i = 0; i < array.length; i++) {
-        if (head.x === array[i].x && head.y === array[i].y) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    document.addEventListener("keydown", changeDirection);
-
-    function changeDirection(event) {
-      if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-      else if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-      else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-      else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-    }
-
-    let game = setInterval(draw, 100);
-  </script>
+  // Init
+  loadQuestion();
+</script>
 </body>
 </html>
